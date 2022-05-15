@@ -222,7 +222,7 @@ function updateEmployeeRole() {
       
       fnArray.push(data[i].fname);
       fnArray.push(data[i].lname);
-      //employeeArray 
+      employeeArray.push(data[i].fname +'' + data[i].lname)
       iDArray.push(data[i].id);
 
     }
