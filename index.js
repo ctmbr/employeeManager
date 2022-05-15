@@ -213,11 +213,17 @@ function addEmployee() {
 function updateEmployeeRole() {
 
   dataReader.viewEmployees().then(([data]) => {
-    const employeeArray = [];
-    const employeeIDArray = [];
+    const fnArray = [];
+    const lnArray = [];
+    const iDArray = [];
+    const employeeArray  = [];
+
     for (let i = 0; i < data.length; i++) {
-      employeeArray.push(data[i].name);
-      employeeIDArray.push(data[i].id);
+      
+      fnArray.push(data[i].fname);
+      fnArray.push(data[i].lname);
+      //employeeArray 
+      iDArray.push(data[i].id);
 
     }
     inquirer
@@ -238,7 +244,7 @@ function updateEmployeeRole() {
       .then((response) => {
         const findata = {
           role_id: roleIDArray[roleArray.indexOf(response.role)],
-          employee_id: employeeIDArray[employeeArray.indexOf(response.employee)],
+          employee_id: IDArray[employeeArray.indexOf(response.employee)],
         };
         dataReader
         .updateEmployeeRole(findata)
