@@ -14,8 +14,7 @@ const initialQuestion = [
       "Add a Department",
       "Add a Role",
       "Add an Employee",
-      "Update an Employee Role",
-      "Quit",
+      "Update an Employee",
     ],
   },
 ];
@@ -40,7 +39,7 @@ function init() {
         case "Add a Role":
           addRole();
           break;
-        case "Add an Employees":
+        case "Add an Employee":
           addEmployee();
           break;
         case "Update an Employee":
@@ -150,116 +149,124 @@ function addRole() {
   });
 }
 function addEmployee() {
-  dataReader.viewRoles().then(([data]) => {
-    const roleArray = [];
-    const roleIDArray = [];
-    for (let i = 0; i < data.length; i++) {
-      roleArray.push(data[i].name);
-      roleIDArray.push(data[i].id);
-    }
-      dataReader.viewEmployees().then(([data]) => {
-    const managerArray = [];
-    const managerIDArray = [];
-    for (let i = 0; i < data.length; i++) {
-      managerArray.push(data[i].name);
-      managerIDArray.push(data[i].id);
-
-    }
-    inquirer
-      .prompt([
-        {
-          type: "input",
-          name: "first_name",
-          message: "Input first Employee name:",
-        },
-        {
-          type: "input",
-          name: "last_name",
-          message: "Input last Employee name:",
-        },
-        {
-          type: "list",
-          name: "role",
-          message: "Assign a Role for this Employee:",
-          choices: roleArray,
-        },
-        {
-          type: "list",
-          name: "manager",
-          message: "Select a Manager for this Employee:",
-          choices: managerArray
-        },
-      ])
-      .then((response) => {
-        const findata = {
-          first_name: response.first_name,
-          last_name: response.last_name,
-          role_id: roleIDArray[roleArray.indexOf(response.role)],
-          manager_id: managerIDArray[managerArray.indexOf(response.manager)],
-        };
-        dataReader
-          .addEmployee(findata)
-          .then(() => {
-            console.log(
-              `Employee ${response.first_name} ${response.last_name} succesfully added`
-            );
-          })
-          .then(() => {
-            init();
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "first_name",
+        message: "Input first Employee name:",
+      },
+      {
+        type: "input",
+        name: "last_name",
+        message: "Input last Employee name:",
+      },
+    ])
+    .then((result) => {
+      let first_name = result.first_name;
+      let last_name = result.last_name;
+      dataReader.viewRoles().then(([roles]) => {
+        const roleArray = roles.map((role) => {
+          return { name: role.title, value: role.id };
+        });
+        inquirer
+          .prompt([
+            {
+              type: "list",
+              name: "role_id",
+              message: "Select a role for this employee",
+              choices: roleArray,
+            },
+          ])
+          .then((dada) => {
+            let role_id = dada.role_id;
+            dataReader.viewEmployees().then(([employees]) => {
+              const managerArray = employees.map((employee) => {
+                return {
+                  name: `${employee.first_name} ${employee.last_name}`,
+                  value: employee.id,
+                };
+              });
+              inquirer
+                .prompt([
+                  {
+                    type: "list",
+                    name: "manager_id",
+                    message: "Select a manager for this employee",
+                    choices: managerArray,
+                  },
+                ])
+                .then((result) => {
+                  let manager_id = result.manager_id;
+                  const newEmployee = {
+                    first_name,
+                    last_name,
+                    role_id,
+                    manager_id,
+                  };
+                  dataReader.addEmployee(newEmployee);
+                })
+                .then(() => {
+                  console.log(
+                    `Employee ${first_name} ${last_name} succesfully added `
+                  );
+                })
+                .then(() => {
+                  init();
+                });
+            });
           });
       });
-  });
-},
-function updateEmployeeRole() {
-
-  dataReader.viewEmployees().then(([data]) => {
-    const fnArray = [];
-    const lnArray = [];
-    const iDArray = [];
-    const employeeArray  = [];
-
-    for (let i = 0; i < data.length; i++) {
-      
-      fnArray.push(data[i].fname);
-      fnArray.push(data[i].lname);
-      employeeArray.push(data[i].fname +'' + data[i].lname)
-      iDArray.push(data[i].id);
-
-    }
-    inquirer
-      .prompt([
-        {
-          type: "list",
-          name: "employee",
-          message: "Select an Employee:",
-          choices: employeeArray
-        },
-        {
-          type: "list",
-          name: "role",
-          message: "Assign a new Role for this Employee:",
-          choices: roleArray,
-        },
-      ])
-      .then((response) => {
-        const findata = {
-          role_id: roleIDArray[roleArray.indexOf(response.role)],
-          employee_id: IDArray[employeeArray.indexOf(response.employee)],
-        };
-        dataReader
-        .updateEmployeeRole(findata)
-          .then(() => {
-            console.log(
-              `Employee ${response.first_name} ${response.last_name} succesfully promoted to `
-            );
-          })
-          .then(() => {
-            init();
-          });
-      });
-  });
-
-},
-init() {
-  return null
+    });
 }
+function updateEmployeeRole() {
+  dataReader.viewEmployees().then(([data]) => {
+    const employeeArray = data.map((employee) => {
+      return {
+        name: `${employee.first_name} ${employee.last_name}`,
+        value: employee.id,
+      };
+    });
+    inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "employee_id",
+          message: "Select an Employee:",
+          choices: employeeArray,
+        },
+      ])
+      .then((response) => {
+        const employee_id = response.employee_id;
+        dataReader.viewRoles().then(([data]) => {
+          const roleArray = data.map((role) => {
+            return {
+              name: role.title,
+              value: role.id,
+            };
+          });
+          inquirer
+            .prompt([
+              {
+                type: "list",
+                name: "role_id",
+                message: "Assign a new Role for this Employee:",
+                choices: roleArray,
+              },
+            ])
+            .then((result) => {
+              const role_id = result.role_id;
+              dataReader
+                .updateEmployeeRole(employee_id, role_id)
+                .then(() => {
+                  console.log(`Employee succesfully promoted`);
+                })
+                .then(() => {
+                  init();
+                });
+            });
+        });
+      });
+  });
+}
+init();

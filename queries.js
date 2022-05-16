@@ -28,7 +28,12 @@ class DataReader {
       .query("INSERT INTO employee SET ?", employee);
   }
   updateEmployeeRole(employeeId, newRoleId) {
-    return this.connection.promise().query("UPDATE employee SET ? WHERE ?");
+    return this.connection
+      .promise()
+      .query("UPDATE employee SET role_id=? WHERE id=?", [
+        newRoleId,
+        employeeId,
+      ]);
   }
   // Query to create array of managers
   // genManagerArray(employeeId, newRoleId) {
