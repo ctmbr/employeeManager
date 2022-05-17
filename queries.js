@@ -8,10 +8,18 @@ class DataReader {
     return this.connection.promise().query("SELECT * FROM department");
   }
   viewRoles() {
-    return this.connection.promise().query("SELECT * FROM role");
+    return this.connection
+      .promise()
+      .query(
+        "SELECT role.id, role.title, role.salary, department.name AS department FROM role LEFT JOIN department ON role.department_id =department.id;"
+      );
   }
   viewEmployees() {
-    return this.connection.promise().query("SELECT * FROM employee");
+    return this.connection
+      .promise()
+      .query(
+        "SELECT employee.id, CONCAT(employee.first_name, ' ', employee.last_name) AS name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee manager ON manager.id = employee.manager_id;"
+      );
   }
   addDepartment(department) {
     return this.connection
@@ -35,10 +43,6 @@ class DataReader {
         employeeId,
       ]);
   }
-  // Query to create array of managers
-  // genManagerArray(employeeId, newRoleId) {
-  //     return this.connection.promise().query("SELECT * FROM employee WHERE ");
-  //   }
 }
 
 module.exports = new DataReader(connection);
