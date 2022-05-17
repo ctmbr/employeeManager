@@ -82,7 +82,6 @@ function viewEmployees() {
     });
 }
 function addDepartment() {
-  viewDepartments();
   inquirer
     .prompt([
       {
