@@ -104,13 +104,12 @@ function addDepartment() {
 }
 function addRole() {
   dataReader.viewDepartments().then(([data]) => {
-    const dpArray = [];
-    const dpIDArray = [];
-    for (let i = 0; i < data.length; i++) {
-      dpArray.push(data[i].name);
-      dpIDArray.push(data[i].id);
-    }
-
+    const dpArray = data.map((department) => {
+      return {
+        name: department.name,
+        value: department.id,
+      };
+    });
     inquirer
       .prompt([
         {
@@ -134,7 +133,7 @@ function addRole() {
         const findata = {
           title: response.title,
           salary: response.salary,
-          department_id: dpIDArray[dpArray.indexOf(response.department)],
+          department_id: response.department,
         };
         dataReader
           .addRole(findata)
