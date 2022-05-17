@@ -1,7 +1,6 @@
 const inquirer = require("inquirer");
 require("console.table");
 const dataReader = require("./queries");
-
 const initialQuestion = [
   {
     type: "list",
@@ -183,7 +182,7 @@ function addEmployee() {
             dataReader.viewEmployees().then(([employees]) => {
               const managerArray = employees.map((employee) => {
                 return {
-                  name: `${employee.first_name} ${employee.last_name}`,
+                  name: employee.name,
                   value: employee.id,
                 };
               });
