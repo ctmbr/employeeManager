@@ -220,7 +220,7 @@ function updateEmployeeRole() {
   dataReader.viewEmployees().then(([data]) => {
     const employeeArray = data.map((employee) => {
       return {
-        name: `${employee.first_name} ${employee.last_name}`,
+        name: employee.name,
         value: employee.id,
       };
     });
